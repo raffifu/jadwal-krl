@@ -1,5 +1,6 @@
 import { Markup } from 'telegraf';
 import { ReplyKeyboardMarkup } from 'telegraf/typings/core/types/typegram';
+import Button from '../Button';
 import { StationData } from '../model/api';
 
 const keyboard = {
@@ -14,14 +15,14 @@ const keyboard = {
         return prev;
       }, []);
 
-    inlineKeyboard.push(['Batal']);
+    inlineKeyboard.push([Button.CANCEL]);
 
     return Markup.keyboard(inlineKeyboard)
       .resize()
       .oneTime();
   },
   defaultKeyboard: () : Markup.Markup<ReplyKeyboardMarkup> => Markup.keyboard([
-    ['🚈 Jadwal KRL'],
+    [Button.STATION],
   ]).resize(),
 };
 
