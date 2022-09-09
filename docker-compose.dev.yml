@@ -1,0 +1,10 @@
+version: "3"
+
+services:
+  telegram_bot:
+    volumes:
+      - ./src:/app/src
+    command: "npm run dev"
+  mongodb:
+    ports:
+      - "27017:27017"

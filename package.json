@@ -4,7 +4,7 @@
   "description": "Bot Telegram untuk menampilkan jadwal krl",
   "main": "dist/main.js",
   "scripts": {
-    "start": "node dist/main.js",
+    "start": "npm run build && node dist/main.js",
     "build": "tsc",
     "dev": "nodemon src/main.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -13,6 +13,7 @@
   "license": "ISC",
   "dependencies": {
     "axios": "^0.27.2",
+    "mongodb": "^4.9.1",
     "telegraf": "^4.9.1",
     "winston": "^3.8.1"
   },

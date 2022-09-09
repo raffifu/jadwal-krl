@@ -1,4 +1,4 @@
-import { ScheduleData, StationData } from '../model/api';
+import { ScheduleData, StationData, TimeRange } from '../model/api';
 
 interface ResponseParser {
     parse: () => string
@@ -7,11 +7,14 @@ interface ResponseParser {
 class ScheduleResponseParser implements ResponseParser {
   private station: StationData;
 
+  private timeRange: TimeRange;
+
   private schedules: Array<ScheduleData>;
 
-  constructor(station: StationData, schedules: Array<ScheduleData>) {
+  constructor(station: StationData, schedules: Array<ScheduleData>, timeRange: TimeRange) {
     this.station = station;
     this.schedules = schedules;
+    this.timeRange = timeRange;
   }
 
   public parse() : string {
@@ -19,11 +22,13 @@ class ScheduleResponseParser implements ResponseParser {
   }
 
   private header(): string {
-    return `*JADWAL KRL*\nMenampilkan jadwal 3 Jam kedepan dari stasiun ${this.station.stationName}\n\n`;
+    return `*JADWAL KRL Commuterline*\n${this.station.stationName} (${this.timeRange.start} - ${this.timeRange.end})\n\n`;
   }
 
   private body(): string {
-    return this.schedules?.map((data) => this.lineParser(data)).join('\n');
+    if (this.schedules) { return this.schedules.map((data) => this.lineParser(data)).join('\n'); }
+
+    return 'Tidak ada jadwal pada rentang waktu tersebut';
   }
 
   private lineParser(data: ScheduleData): string {

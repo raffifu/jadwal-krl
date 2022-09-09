@@ -1,0 +1,21 @@
+version: "3"
+
+services:
+  telegram_bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    environment:
+      BOT_TOKEN: ${BOT_TOKEN}
+      API_URL: ${API_URL}
+      MONGODB_URL: mongodb://${DB_USER}:${DB_PASSWORD}@mongodb:27017
+      DB_NAME: ${DB_NAME}
+  mongodb:
+    image: mongo:5-focal
+    restart: always
+    volumes:
+      - ./data/db:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${DB_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${DB_PASSWORD}
