@@ -38,6 +38,40 @@ const messageHandler = {
     );
   },
 
+  specificTimeMessage: async (ctx: Context<Update.MessageUpdate> &
+    Omit<Context<Update>, keyof Context<Update>>) => {
+    const { message } = ctx;
+    if ('text' in message) {
+      const msg: string = message.text;
+
+      const timeRegex: RegExp = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
+      const times: Array<string> = msg.split('-').map((str) => str.trim());
+      if (times.length === 2 && times.every((time) => time.match(timeRegex))) {
+        // TODO: Get station from database
+        // If not exist, send error response to user
+        const stations: Array<StationData> = await api.getStations() as Array<StationData>;
+        const station: StationData = stations.find((st) => st.stationName === 'LEMPUYANGAN')!;
+
+        const timeRange = {
+          start: times[0],
+          end: times[1],
+        };
+        const schedules = await api.getSchedules(station.stationCode, timeRange);
+
+        const scheduleParser = new ScheduleResponseParser(station, schedules, timeRange);
+
+        ctx.reply(
+          scheduleParser.parse(),
+          {
+            parse_mode: 'Markdown',
+            reply_to_message_id: ctx.message.message_id,
+            reply_markup: keyboard.defaultKeyboard().reply_markup,
+          },
+        );
+      }
+    }
+  },
+
   commonMessage: async (ctx: Context<Update.MessageUpdate> &
     Omit<Context<Update>, keyof Context<Update>>) => {
     const { message } = ctx;
@@ -45,14 +79,16 @@ const messageHandler = {
     if ('text' in message) {
       logger.info(`📥 RECEIVE_MESSAGE StationHandler from ${ctx.message.chat.id} - ${message.text}`);
 
+      // TODO: Get station from database
+      // If not exist, get stations from API
       const stations: Array<StationData> = await api.getStations() as Array<StationData>;
       const station: StationData = stations.find((st) => st.stationName === message.text)!;
 
       if (station) {
-        const dateUtils = new DateUtils();
-        const schedules = await api.getSchedules(station.stationCode, dateUtils.getTimeRange(3));
+        const timeRange = new DateUtils().getTimeRange(3);
+        const schedules = await api.getSchedules(station.stationCode, timeRange);
 
-        const scheduleParser = new ScheduleResponseParser(station, schedules);
+        const scheduleParser = new ScheduleResponseParser(station, schedules, timeRange);
 
         ctx.reply(
           scheduleParser.parse(),
