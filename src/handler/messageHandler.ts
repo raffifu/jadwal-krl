@@ -6,6 +6,8 @@ import logger from '../utils/logger';
 import CommuterlineApi from '../source/CommuterlineApi';
 import DateUtils from '../utils/DateUtils';
 import ScheduleResponseParser from '../utils/ScheduleResponseParser';
+import User from '../model/users.model';
+import Station from '../model/stations.model';
 
 const apiUrl: string = process.env.API_URL as string;
 
@@ -30,7 +32,11 @@ const messageHandler = {
     Omit<Context<Update>, keyof Context<Update>>) => {
     logger.info(`📥 RECEIVE_MESSAGE ScheduleHandler from ${ctx.message.chat.id}`);
 
-    const stations: Array<StationData> = await api.getStations() as Array<StationData>;
+    let stations: Array<StationData> = await Station.find() as Array<StationData>;
+    if (stations.length === 0) {
+      stations = await api.getStations() as Array<StationData>;
+      await Station.insertMany(stations, { ordered: false });
+    }
 
     ctx.reply(
       'Silahkah Pilih Stasiun Keberangkatan',
@@ -47,10 +53,18 @@ const messageHandler = {
       const timeRegex: RegExp = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
       const times: Array<string> = msg.split('-').map((str) => str.trim());
       if (times.length === 2 && times.every((time) => time.match(timeRegex))) {
-        // TODO: Get station from database
-        // If not exist, send error response to user
-        const stations: Array<StationData> = await api.getStations() as Array<StationData>;
-        const station: StationData = stations.find((st) => st.stationName === 'LEMPUYANGAN')!;
+        const user = await User.findOne({ chatId: message.chat.id });
+
+        if (user === null || !user.station) {
+          ctx.reply(
+            'Anda Belum memilih stasiun keberangkatan',
+            keyboard.defaultKeyboard(),
+          );
+
+          return;
+        }
+
+        const { station } = user;
 
         const timeRange = {
           start: times[0],
@@ -79,12 +93,19 @@ const messageHandler = {
     if ('text' in message) {
       logger.info(`📥 RECEIVE_MESSAGE StationHandler from ${ctx.message.chat.id} - ${message.text}`);
 
-      // TODO: Get station from database
-      // If not exist, get stations from API
-      const stations: Array<StationData> = await api.getStations() as Array<StationData>;
+      let stations: Array<StationData> = await Station.find() as Array<StationData>;
+      if (stations.length === 0) {
+        stations = await api.getStations() as Array<StationData>;
+        await Station.insertMany(stations, { ordered: false });
+      }
+
       const station: StationData = stations.find((st) => st.stationName === message.text)!;
 
+      const user = await User.findOneOrCreate(message.chat.id);
+
       if (station) {
+        user.setStation(station);
+
         const timeRange = new DateUtils().getTimeRange(3);
         const schedules = await api.getSchedules(station.stationCode, timeRange);
 
