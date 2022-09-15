@@ -50,9 +50,9 @@ const messageHandler = {
     if ('text' in message) {
       const msg: string = message.text;
 
-      const timeRegex: RegExp = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
-      const times: Array<string> = msg.split('-').map((str) => str.trim());
-      if (times.length === 2 && times.every((time) => time.match(timeRegex))) {
+      const timeRegex: RegExp = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/g;
+      const times: RegExpMatchArray | null = msg.match(timeRegex);
+      if (times && times.length === 2) {
         const user = await User.findOne({ chatId: message.chat.id });
 
         if (user === null || !user.station) {
@@ -79,7 +79,7 @@ const messageHandler = {
           {
             parse_mode: 'Markdown',
             reply_to_message_id: ctx.message.message_id,
-            reply_markup: keyboard.defaultKeyboard().reply_markup,
+            reply_markup: keyboard.pickTimeKeyboard().reply_markup,
           },
         );
       }
@@ -116,7 +116,7 @@ const messageHandler = {
           {
             parse_mode: 'Markdown',
             reply_to_message_id: ctx.message.message_id,
-            reply_markup: keyboard.defaultKeyboard().reply_markup,
+            reply_markup: keyboard.pickTimeKeyboard().reply_markup,
           },
         );
       }

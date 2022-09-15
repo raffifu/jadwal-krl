@@ -1,5 +1,5 @@
 enum Button {
-    CANCEL = 'Batal',
+    BACK = 'Kembali',
     STATION = '🏛️ Pilih Stasiun Keberangkatan'
 }
 

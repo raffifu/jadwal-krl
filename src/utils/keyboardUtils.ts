@@ -1,5 +1,5 @@
 import { Markup } from 'telegraf';
-import { ReplyKeyboardMarkup } from 'telegraf/typings/core/types/typegram';
+import { InlineKeyboardMarkup, ReplyKeyboardMarkup } from 'telegraf/typings/core/types/typegram';
 import Button from '../Button';
 import { StationData } from '../model/api';
 
@@ -15,7 +15,7 @@ const keyboard = {
         return prev;
       }, []);
 
-    inlineKeyboard.push([Button.CANCEL]);
+    inlineKeyboard.push([Button.BACK]);
 
     return Markup.keyboard(inlineKeyboard)
       .resize()
@@ -24,6 +24,12 @@ const keyboard = {
   defaultKeyboard: () : Markup.Markup<ReplyKeyboardMarkup> => Markup.keyboard([
     [Button.STATION],
   ]).resize(),
+  pickTimeKeyboard: (): Markup.Markup<InlineKeyboardMarkup> => Markup.inlineKeyboard([[
+    Markup.button.callback('⏲️ +1 Jam', 'TIME_1'),
+    Markup.button.callback('⏲️ +2 Jam', 'TIME_2'),
+  ], [
+    Markup.button.callback('Custom Time', 'TIME_CUSTOM'),
+  ]]),
 };
 
 export default keyboard;

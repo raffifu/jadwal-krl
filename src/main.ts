@@ -16,7 +16,7 @@ const mongoConn = MongoDbConnection.getInstance();
 const bot: Telegraf = new Telegraf(token);
 
 bot.start(commandHandler.start);
-bot.hears(Button.CANCEL, messageHandler.cancel);
+bot.hears(Button.BACK, messageHandler.cancel);
 bot.hears(Button.STATION, messageHandler.station);
 bot.hears(/-/, messageHandler.specificTimeMessage);
 bot.on('message', messageHandler.commonMessage);
