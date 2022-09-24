@@ -4,6 +4,7 @@ import MongoDbConnection from './source/db';
 import commandHandler from './handler/commandHandler';
 import messageHandler from './handler/messageHandler';
 import Button from './Button';
+import callbackHandler from './handler/callbackHandler';
 
 const token: string = process.env.BOT_TOKEN as string;
 
@@ -19,6 +20,7 @@ bot.start(commandHandler.start);
 bot.hears(Button.BACK, messageHandler.cancel);
 bot.hears(Button.STATION, messageHandler.station);
 bot.hears(/-/, messageHandler.specificTimeMessage);
+bot.on('callback_query', callbackHandler);
 bot.on('message', messageHandler.commonMessage);
 
 logger.info('🚀 START Application starting...');
