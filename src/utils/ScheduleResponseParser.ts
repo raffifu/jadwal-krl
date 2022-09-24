@@ -22,7 +22,7 @@ class ScheduleResponseParser implements ResponseParser {
   }
 
   private header(): string {
-    return `*JADWAL KRL Commuterline*\n${this.station.stationName} (${this.timeRange.start} - ${this.timeRange.end})\n\n`;
+    return `*JADWAL KRL Commuterline*\n(${this.station.stationCode}) ${this.station.stationName}\n${this.timeRange.start} - ${this.timeRange.end}\n\n`;
   }
 
   private body(): string {
