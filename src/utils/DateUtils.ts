@@ -1,11 +1,11 @@
-import moment from 'moment';
+import moment from 'moment-timezone';
 import { TimeRange } from '../model/api';
 
 export default class DateUtils {
   private moment: moment.Moment;
 
   constructor() {
-    this.moment = moment();
+    this.moment = moment().tz('Asia/Jakarta');
   }
 
   public getTimeRange(diff: number) : TimeRange {
