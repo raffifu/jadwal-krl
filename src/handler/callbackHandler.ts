@@ -7,7 +7,7 @@ import CommuterlineApi from '../source/CommuterlineApi';
 import ScheduleResponseParser from '../utils/ScheduleResponseParser';
 import Station from '../model/stations.model';
 import keyboard from '../utils/keyboardUtils';
-import DateUtils from '../utils/DateUtils';
+import User from '../model/users.model';
 
 const apiUrl: string = process.env.API_URL as string;
 
@@ -23,22 +23,15 @@ const callbackHandler = async (ctx: Context<Update.CallbackQueryUpdate> &
   const callbackData = callback_query?.data;
   const { message } = callback_query;
 
-  const param : string | null | undefined = callbackData?.match(/^TIME_/) && callbackData.replace(/^TIME_/, '');
-
+  // Parse Message
   if (!message || !('text' in message)) return;
-  if (param && !param.match(/\d/)) return;
 
   const msgUtils = new MessageUtils(message.text);
   const timeRange: TimeRange = msgUtils.getTime() as TimeRange;
   const stationCode: string = msgUtils.getStationCode() as string;
-
   if (!timeRange || !stationCode) return;
 
-  timeRange.start = moment(timeRange.start, 'HH:mm').add(param, 'hours').format('HH:mm');
-  timeRange.end = moment(timeRange.end, 'HH:mm').add(param, 'hours').format('HH:mm');
-
-  const schedules = await api.getSchedules(stationCode, timeRange);
-
+  // Get station
   let station: StationData = await Station.findOne({ stationCode }) as StationData;
   if (!station) {
     const stations = await api.getStations() as Array<StationData>;
@@ -48,13 +41,27 @@ const callbackHandler = async (ctx: Context<Update.CallbackQueryUpdate> &
 
   if (!station) return;
 
-  const scheduleParser = new ScheduleResponseParser(station, schedules, timeRange);
+  const param : string | null | undefined = callbackData?.match(/^TIME_/) && callbackData.replace(/^TIME_/, '');
+  if (param && param.match(/\d/)) {
+    timeRange.start = moment(timeRange.start, 'HH:mm').add(param, 'hours').format('HH:mm');
+    timeRange.end = moment(timeRange.end, 'HH:mm').add(param, 'hours').format('HH:mm');
 
-  await ctx.answerCbQuery();
-  await ctx.editMessageText(scheduleParser.parse(), {
-    parse_mode: 'Markdown',
-    reply_markup: keyboard.pickTimeKeyboard().reply_markup,
-  });
+    const schedules = await api.getSchedules(stationCode, timeRange);
+
+    const scheduleParser = new ScheduleResponseParser(station, schedules, timeRange);
+
+    await ctx.answerCbQuery();
+    await ctx.editMessageText(scheduleParser.parse(), {
+      parse_mode: 'Markdown',
+      reply_markup: keyboard.pickTimeKeyboard().reply_markup,
+    });
+  } else {
+    const user = await User.findOneOrCreate(message.chat.id);
+    user.setStation(station);
+
+    await ctx.answerCbQuery();
+    await ctx.reply('Kirim pesan dengan format HH:mm - HH:mm\ncontoh: 12:00 - 13:00');
+  }
 };
 
 export default callbackHandler;

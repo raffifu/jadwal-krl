@@ -32,7 +32,7 @@ class ScheduleResponseParser implements ResponseParser {
   }
 
   private lineParser(data: ScheduleData): string {
-    return `*${this.station.stationName} - ${data.destination}*\n🕰 ${data.timeEst} - ${data.destTime}\n🚂 _${data.routeName}_\n`;
+    return `*${this.station.stationName} - ${data.destination}*\n🕰 ${data.timeEst} - ${data.destTime}\n🚂 _${data.trainName}_\n`;
   }
 }
 

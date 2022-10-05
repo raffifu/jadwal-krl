@@ -30,7 +30,7 @@ const messageHandler = {
 
   station: async (ctx: Context<Update.MessageUpdate> &
     Omit<Context<Update>, keyof Context<Update>>) => {
-    logger.info(`📥 RECEIVE_MESSAGE ScheduleHandler from ${ctx.message.chat.id}`);
+    logger.info(`📥 RECEIVE_MESSAGE station from ${ctx.message.chat.id}`);
 
     let stations: Array<StationData> = await Station.find() as Array<StationData>;
     if (stations.length === 0) {
@@ -46,11 +46,13 @@ const messageHandler = {
 
   specificTimeMessage: async (ctx: Context<Update.MessageUpdate> &
     Omit<Context<Update>, keyof Context<Update>>) => {
+    logger.info(`📥 RECEIVE_MESSAGE specificTimeMessage from ${ctx.message.chat.id}`);
+
     const { message } = ctx;
     if ('text' in message) {
       const msg: string = message.text;
 
-      const timeRegex: RegExp = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/g;
+      const timeRegex: RegExp = /([0-1]?[0-9]|2[0-3]):[0-5][0-9]/g;
       const times: RegExpMatchArray | null = msg.match(timeRegex);
       if (times && times.length === 2) {
         const user = await User.findOne({ chatId: message.chat.id });
@@ -91,7 +93,7 @@ const messageHandler = {
     const { message } = ctx;
 
     if ('text' in message) {
-      logger.info(`📥 RECEIVE_MESSAGE StationHandler from ${ctx.message.chat.id} - ${message.text}`);
+      logger.info(`📥 RECEIVE_MESSAGE commonMessage from ${ctx.message.chat.id} - ${message.text}`);
 
       let stations: Array<StationData> = await Station.find() as Array<StationData>;
       if (stations.length === 0) {
