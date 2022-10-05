@@ -4,7 +4,7 @@ services:
   telegram_bot:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.prod
     restart: always
     environment:
       BOT_TOKEN: ${BOT_TOKEN}
