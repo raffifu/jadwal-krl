@@ -23,6 +23,10 @@ bot.hears(/-/, messageHandler.specificTimeMessage);
 bot.on('callback_query', callbackHandler);
 bot.on('message', messageHandler.commonMessage);
 
+bot.catch((err) => {
+  logger.error(err);
+});
+
 logger.info('🚀 START Application starting...');
 bot.launch();
 
