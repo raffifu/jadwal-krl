@@ -35,7 +35,7 @@ const messageHandler = {
     let stations: Array<StationData> = await Station.find() as Array<StationData>;
     if (stations.length === 0) {
       stations = await api.getStations() as Array<StationData>;
-      await Station.insertMany(stations, { ordered: false });
+      stations.forEach((station) => Station.findOneAndReplace(station));
     }
 
     ctx.reply(
@@ -95,33 +95,37 @@ const messageHandler = {
     if ('text' in message) {
       logger.info(`📥 RECEIVE_MESSAGE commonMessage from ${ctx.message.chat.id} - ${message.text}`);
 
-      let stations: Array<StationData> = await Station.find() as Array<StationData>;
-      if (stations.length === 0) {
-        stations = await api.getStations() as Array<StationData>;
-        await Station.insertMany(stations, { ordered: false });
+      const stationName: string = message.text.replace(' ', '').toUpperCase();
+      let station: StationData = await Station.findOne({ stationName }) as StationData;
+      if (!station) {
+        const stations = await api.getStations() as Array<StationData>;
+
+        stations.forEach((st) => {
+          if (st.stationName === stationName) { station = st; }
+
+          Station.findOneAndReplace(station);
+        });
       }
 
-      const station: StationData = stations.find((st) => st.stationName === message.text)!;
+      if (!station) return;
 
       const user = await User.findOneOrCreate(message.chat.id);
 
-      if (station) {
-        user.setStation(station);
+      user.setStation(station);
 
-        const timeRange = new DateUtils().getTimeRange(3);
-        const schedules = await api.getSchedules(station.stationCode, timeRange);
+      const timeRange = new DateUtils().getTimeRange(1);
+      const schedules = await api.getSchedules(station.stationCode, timeRange);
 
-        const scheduleParser = new ScheduleResponseParser(station, schedules, timeRange);
+      const scheduleParser = new ScheduleResponseParser(station, schedules, timeRange);
 
-        ctx.reply(
-          scheduleParser.parse(),
-          {
-            parse_mode: 'Markdown',
-            reply_to_message_id: ctx.message.message_id,
-            reply_markup: keyboard.pickTimeKeyboard().reply_markup,
-          },
-        );
-      }
+      ctx.reply(
+        scheduleParser.parse(),
+        {
+          parse_mode: 'Markdown',
+          reply_to_message_id: ctx.message.message_id,
+          reply_markup: keyboard.pickTimeKeyboard().reply_markup,
+        },
+      );
     }
   },
 };
