@@ -14,7 +14,7 @@ export default class CommuterlineApi {
     });
   }
 
-  async getTrainSchedule(trainNum: number): Promise<Array<TrainScheduleData>> {
+  async getTrainSchedule(trainNum: string): Promise<Array<TrainScheduleData>> {
     logger.info(`🌐 API getTrainSchedule sending request for trainNum: ${trainNum}`);
 
     const response: AxiosResponse<ApiResponse<TrainScheduleData>> = await this.instance.get(`/train-schedule?trainNum=${trainNum}`);

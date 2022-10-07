@@ -8,6 +8,7 @@ import DateUtils from '../utils/DateUtils';
 import SchedulesParser from '../utils/ScheduleResponseParser';
 import User from '../model/users.model';
 import Station from '../model/stations.model';
+import commandHandler from './commandHandler';
 
 const apiUrl: string = process.env.API_URL as string;
 
@@ -94,6 +95,13 @@ const messageHandler = {
 
     if ('text' in message) {
       logger.info(`📥 RECEIVE_MESSAGE commonMessage from ${ctx.message.chat.id} - ${message.text}`);
+
+      const regex: RegExp = /\/\w+/g;
+      const matches: RegExpMatchArray | null = message.text.match(regex);
+      if (matches) {
+        commandHandler.common(ctx);
+        return;
+      }
 
       const stationName: string = message.text.replace(' ', '').toUpperCase();
       let station: StationData = await Station.findOne({ stationName }) as StationData;
