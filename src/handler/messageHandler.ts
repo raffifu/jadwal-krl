@@ -5,7 +5,7 @@ import keyboard from '../utils/keyboardUtils';
 import logger from '../utils/logger';
 import CommuterlineApi from '../source/CommuterlineApi';
 import DateUtils from '../utils/DateUtils';
-import ScheduleResponseParser from '../utils/ScheduleResponseParser';
+import SchedulesParser from '../utils/ScheduleResponseParser';
 import User from '../model/users.model';
 import Station from '../model/stations.model';
 
@@ -74,7 +74,7 @@ const messageHandler = {
         };
         const schedules = await api.getSchedules(station.stationCode, timeRange);
 
-        const scheduleParser = new ScheduleResponseParser(station, schedules, timeRange);
+        const scheduleParser = new SchedulesParser(station, schedules, timeRange);
 
         ctx.reply(
           scheduleParser.parse(),
@@ -116,7 +116,7 @@ const messageHandler = {
       const timeRange = new DateUtils().getTimeRange(1);
       const schedules = await api.getSchedules(station.stationCode, timeRange);
 
-      const scheduleParser = new ScheduleResponseParser(station, schedules, timeRange);
+      const scheduleParser = new SchedulesParser(station, schedules, timeRange);
 
       ctx.reply(
         scheduleParser.parse(),

@@ -4,7 +4,7 @@ import moment from 'moment-timezone';
 import { StationData, TimeRange } from '../model/api';
 import MessageUtils from '../utils/MessageUtils';
 import CommuterlineApi from '../source/CommuterlineApi';
-import ScheduleResponseParser from '../utils/ScheduleResponseParser';
+import SchedulesParser from '../utils/ScheduleResponseParser';
 import Station from '../model/stations.model';
 import keyboard from '../utils/keyboardUtils';
 import User from '../model/users.model';
@@ -56,7 +56,7 @@ const callbackHandler = async (ctx: Context<Update.CallbackQueryUpdate> &
 
     const schedules = await api.getSchedules(stationCode, timeRange);
 
-    const scheduleParser = new ScheduleResponseParser(station, schedules, timeRange);
+    const scheduleParser = new SchedulesParser(station, schedules, timeRange);
 
     await ctx.answerCbQuery();
     await ctx.editMessageText(scheduleParser.parse(), {

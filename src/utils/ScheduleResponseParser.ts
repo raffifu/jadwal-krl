@@ -1,10 +1,7 @@
 import { ScheduleData, StationData, TimeRange } from '../model/api';
+import ResponseParser from './ResponseParser.interface';
 
-interface ResponseParser {
-    parse: () => string
-}
-
-class ScheduleResponseParser implements ResponseParser {
+class SchedulesParser implements ResponseParser {
   private station: StationData;
 
   private timeRange: TimeRange;
@@ -32,8 +29,8 @@ class ScheduleResponseParser implements ResponseParser {
   }
 
   private lineParser(data: ScheduleData): string {
-    return `*${this.station.stationName} - ${data.destination}*\n🕰 ${data.timeEst} - ${data.destTime}\n🚂 _${data.trainName}_\n`;
+    return `/jadwal\\_${data.trainNum}\n*${this.station.stationName} - ${data.destination}*\n🕰 ${data.timeEst} - ${data.destTime}\n🚂 _${data.trainName}_\n`;
   }
 }
 
-export default ScheduleResponseParser;
+export default SchedulesParser;
