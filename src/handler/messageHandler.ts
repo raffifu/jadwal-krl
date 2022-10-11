@@ -36,7 +36,10 @@ const messageHandler = {
     let stations: Array<StationData> = await Station.find() as Array<StationData>;
     if (stations.length === 0) {
       stations = await api.getStations() as Array<StationData>;
-      stations.forEach((station) => Station.findOneAndReplace(station));
+      stations.forEach((st) => {
+        st.stationName = st.stationName.replace(' ', '');
+        Station.findOneAndReplace(st);
+      });
     }
 
     ctx.reply(
@@ -109,6 +112,7 @@ const messageHandler = {
         const stations = await api.getStations() as Array<StationData>;
 
         stations.forEach((st) => {
+          st.stationName = st.stationName.replace(' ', '');
           if (st.stationName === stationName) { station = st; }
 
           Station.findOneAndReplace(station);

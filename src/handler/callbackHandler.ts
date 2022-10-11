@@ -37,6 +37,7 @@ const callbackHandler = async (ctx: Context<Update.CallbackQueryUpdate> &
     const stations = await api.getStations() as Array<StationData>;
 
     stations.forEach((st) => {
+      st.stationName = st.stationName.replace(' ', '');
       if (st.stationCode === stationCode) { station = st; }
 
       Station.findOneAndReplace(station);
