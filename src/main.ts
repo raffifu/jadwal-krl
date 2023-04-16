@@ -4,6 +4,7 @@ import MongoDbConnection from './source/db'
 import setupCommand from './handler/commandHandler'
 import setupCallback from './handler/callbackHandler'
 import setupMessage from './handler/messageHandler'
+
 const token: string = process.env.BOT_TOKEN as string
 
 if (token === undefined) {
@@ -18,8 +19,10 @@ setupCommand(bot)
 setupCallback(bot)
 setupMessage(bot)
 
-bot.catch((err) => {
+bot.catch(async (err, ctx) => {
   logger.error(err)
+
+  await ctx.reply('Application Error: Try again')
 })
 
 logger.info('🚀 START Application starting...')

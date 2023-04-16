@@ -23,7 +23,15 @@ class SchedulesParser implements ResponseParser {
   }
 
   private body (): string {
-    if (this.schedules) { return this.schedules.map((data) => this.lineParser(data)).join('\n') }
+    if (this.schedules) {
+      let totalLength: number = this.header.length
+      return this.schedules.map((data) => {
+        const lineParsed = this.lineParser(data)
+        totalLength += lineParsed.length
+
+        return totalLength < 4096 ? lineParsed : null
+      }).join('\n')
+    }
 
     return 'Tidak ada jadwal pada rentang waktu tersebut'
   }
