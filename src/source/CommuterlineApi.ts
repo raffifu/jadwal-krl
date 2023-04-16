@@ -7,11 +7,27 @@ import logger from '../utils/logger';
 export default class CommuterlineApi {
   private instance: AxiosInstance;
 
-  constructor(url: string) {
+  private static instance: CommuterlineApi;
+
+  private constructor() {
+    const apiUrl: string = process.env.API_URL as string;
+
+    if (apiUrl === undefined) {
+      throw new Error('API_URL is not defined');
+    }
+
     this.instance = axios.create({
-      baseURL: url,
+      baseURL: apiUrl,
       timeout: 10000,
     });
+  }
+
+  public static getInstance(): CommuterlineApi {
+    if (!this.instance) {
+      this.instance = new CommuterlineApi();
+    }
+
+    return this.instance;
   }
 
   async getTrainSchedule(trainNum: string): Promise<Array<TrainScheduleData>> {
