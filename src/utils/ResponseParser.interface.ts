@@ -2,4 +2,4 @@ interface ResponseParser {
     parse: () => string
 }
 
-export default ResponseParser;
+export default ResponseParser

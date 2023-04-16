@@ -1,7 +1,7 @@
-import { model } from 'mongoose';
-import StationSchema from './stations.schema';
-import { IStation, StationModel } from './stations.types';
+import { model } from 'mongoose'
+import StationSchema from './stations.schema'
+import { IStation, StationModel } from './stations.types'
 
-const Station = model<IStation, StationModel>('station', StationSchema);
+const Station = model<IStation, StationModel>('station', StationSchema)
 
-export default Station;
+export default Station

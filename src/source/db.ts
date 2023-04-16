@@ -1,43 +1,43 @@
-import * as Mongoose from 'mongoose';
-import logger from '../utils/logger';
+import * as Mongoose from 'mongoose'
+import logger from '../utils/logger'
 
 export default class MongoDbConnection {
-  private mongoUrl: string;
+  private mongoUrl: string
 
-  private static instance: MongoDbConnection;
+  private static instance: MongoDbConnection
 
-  private constructor() {
-    this.mongoUrl = process.env.MONGODB_URL as string;
+  private constructor () {
+    this.mongoUrl = process.env.MONGODB_URL as string
 
     if (this.mongoUrl === undefined) {
-      throw new Error('MONGODB_URL is not defined');
+      throw new Error('MONGODB_URL is not defined')
     }
 
-    this.connect();
+    this.connect()
   }
 
-  public static getInstance(): MongoDbConnection {
+  public static getInstance (): MongoDbConnection {
     if (!this.instance) {
-      this.instance = new MongoDbConnection();
+      this.instance = new MongoDbConnection()
     }
 
-    return this.instance;
+    return this.instance
   }
 
-  public connect(): void {
+  private connect (): void {
     if (!Mongoose.connection) {
       Mongoose.connect(this.mongoUrl, { dbName: process.env.DB_NAME })
         .then(() => {
-          logger.info('🗄️  DATABASE Connection success');
+          logger.info('🗄️  DATABASE Connection success')
         }).catch((err) => {
-          logger.error(`🗄️  DATABASE Connection failed. ${err}`);
-        });
+          logger.error(`🗄️  DATABASE Connection failed. ${err}`)
+        })
     }
   }
 
-  public disconnect(): void {
+  public disconnect (): void {
     if (Mongoose.connection) {
-      Mongoose.disconnect();
+      Mongoose.disconnect()
     }
   }
 }

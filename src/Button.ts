@@ -3,4 +3,4 @@ enum Button {
     STATION = '🏛️ Pilih Stasiun Keberangkatan'
 }
 
-export default Button;
+export default Button

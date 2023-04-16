@@ -1,5 +1,5 @@
-import { HydratedDocument, Model } from 'mongoose';
-import { StationData } from './api';
+import { HydratedDocument, Model } from 'mongoose'
+import { StationData } from './api'
 
 export interface IUser {
     chatId: number;
